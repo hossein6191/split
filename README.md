@@ -22,7 +22,7 @@ they never reach the model unfenced.
 | `contracts/split.py` | the contract: funding, the two accounts, the judgment, the appeal, settlement |
 | `tests/test_pure.py` | 30 tests with a GenLayer stub: boundary, closed set, clock, authority, journeys, static rules |
 | `tools/mutate.py` → `tests/MUTATIONS.md` | 27 defences removed one at a time, each killed by a named test |
-| `tests/on_chain/smoke.mjs` | the same story against Studio with throwaway accounts: three cases, every refusal signed |
+| `tests/on_chain/smoke.mjs` | the same story against Studio with throwaway accounts: three cases, every refusal signed — 32/32 on 9 September 2026 |
 | `tests/on_chain.md` | what was measured on chain, including the round signed by the author |
 | `CONTRACTS.md` | the one-page card: purpose, consensus, state, methods, reuse |
 | `DECISIONS.md` | the decisions that are not obvious from the code, and what was verified |
@@ -118,7 +118,7 @@ transactions of both cases including every refusal.
 python -m pytest -q tests/           # 30 pure tests, no network, under a second
 python tools/mutate.py               # 27 mutants, all must die; writes tests/MUTATIONS.md
 genvm-lint check contracts/split.py
-node tests/on_chain/smoke.mjs        # Studio, throwaway accounts (needs genlayer-js and viem on the Node path)
+node tests/on_chain/smoke.mjs        # Studio, throwaway accounts, 32 checks (needs genlayer-js and viem on the Node path)
 ```
 
 ## Rules this was built under
