@@ -107,10 +107,37 @@ Real sentences, one variable each, in the words the prompt asks in.
   bond; the share does not move; the bond goes to the payee at settlement.
 - **logo-set** — funded and released by the payer without a dispute: no model at all.
 
-## Evidence
+## Verified on the Studio network
 
-Filled in from the author's wallets at deployment: the contract address, and the
-transactions of both cases including every refusal.
+Every transaction below was signed by one of the author's two wallets — **A** the payer
+`0x0A9fd8Fe…`, **B** the payee `0x449ab0B8…` — from two browsers, each page signing only
+its own side. The deployed source is byte-identical to `contracts/split.py`
+(sha256 `76465bc2…`) — pull it with `gen_getContractCode` and hash it yourself — and that
+source, pulled off the chain, passes `genvm-lint check`.
+
+Contract [`0x4CdB8F9b…`](https://explorer-studio.genlayer.com/address/0x4CdB8F9bA4144128305A196B0FfF55a0e15E54d0)
+
+| step | by | tx | votes | result |
+|---|---|---|---|---|
+| deploy | A | [`0x02928b11…`](https://explorer-studio.genlayer.com/tx/0x02928b11842af8debe6667df2fb6f4882758e4c3d57050373cb27f9cbfa86a97) | 4 agree, 0 disagree | `0x4CdB8F9b…` |
+| `open` manual-es, 20 GEN | A | [`0xe3fd8008…`](https://explorer-studio.genlayer.com/tx/0xe3fd8008c5335ed85bee1235827da102213ade59512853b059eabe6654350874) | 3 agree, 0 disagree | funded |
+| `file` by the payer | A | [`0x9fa3b248…`](https://explorer-studio.genlayer.com/tx/0x9fa3b2481f0a87410e5a9aeed8bb96b3d161312be7090f24f350127191eb639c) | 3 agree, 0 disagree | disputed |
+| `file` by the payer, again | A | [`0x1657aa15…`](https://explorer-studio.genlayer.com/tx/0x1657aa15729f4096f09c416e2a65090a6535a483d3e0d3039dde344f580cf675) | 3 agree, 0 disagree | **refused**: *the payer has already filed; the account cannot be rewritten* |
+| `file` by the payee | B | [`0x8fe1a8d4…`](https://explorer-studio.genlayer.com/tx/0x8fe1a8d40aaa1e93b0a76138da9c3dcd1325bab0bb5b3830afb9be373b188495) | 4 agree, 0 disagree | both sides in |
+| `judge` | A | [`0x70ad5cbb…`](https://explorer-studio.genlayer.com/tx/0x70ad5cbb48f470a7b0a7985bac8180ae026a78f5ab94691b52225d5623700c08) | 3 agree, 0 disagree | **0** — *No translation was performed; the payee returned the original English file unchanged, delivering nothing of value from the job as written.* |
+| `accept` by the payee | B | [`0xed85ea5d…`](https://explorer-studio.genlayer.com/tx/0xed85ea5d650e8f976fb82fbb4e2b9055e1c1898ce992f575af471e5877e62885) | 3 agree, 0 disagree | the losing side waives the window |
+| `settle` | A | [`0x39d49774…`](https://explorer-studio.genlayer.com/tx/0x39d49774358ad3b7998a4efaa9ad08c0417a3e0cb46f961a5ac5f67ae94d5341) | 3 agree, 0 disagree | 0 to the payee, **20 GEN back to the payer** |
+| `open` checkout-fix, 10 GEN | A | [`0x23f24a17…`](https://explorer-studio.genlayer.com/tx/0x23f24a17987b1b546073d4a122d001b452cf12ddf12179d547179a40d5c5cff6) | 3 agree, 0 disagree | funded |
+| `file` by the payer | A | [`0xf95b5607…`](https://explorer-studio.genlayer.com/tx/0xf95b5607da2c210c5f44117e8664c810c71768aec2b72abd36ec703d9badf882) | 3 agree, 0 disagree | disputed |
+| `file` by the payee | B | [`0x40a4190f…`](https://explorer-studio.genlayer.com/tx/0x40a4190f2ab0e566197149175ec8b46e4d2f8248dfbb26de4f7bc9edc1113595) | 3 agree, 0 disagree | both sides in |
+| `judge` | B | [`0x3945f304…`](https://explorer-studio.genlayer.com/tx/0x3945f304b3f26a8134334082599689fb707e694eb97fca1d0a6d3ad027b59249) | 3 agree, 0 disagree | **100** — *The payee completed all requirements specified in the job description, including the fix and regression test, by the deadline.* |
+| `appeal` by the payer, 1 GEN bond | A | [`0xc09eed64…`](https://explorer-studio.genlayer.com/tx/0xc09eed644dd37a242a2da67b297fa56945c5e634b45d5faf7f59daa64a25df05) | 3 agree, 0 disagree | judged again: **100**, before 100, **moved: false** — *…redesign was not part of the written job.* |
+| `settle` | B | [`0xbd689b77…`](https://explorer-studio.genlayer.com/tx/0xbd689b77bea089b76986fe2da57c821bbfc4bf2649c03d8f58b4b922fb69dcbd) | 3 agree, 0 disagree | **10 GEN to the payee, plus the 1 GEN bond**; 0 to the payer |
+
+And then, with no model involved at all, `case()` reads both cases as **settled**:
+manual-es paid 20 GEN back to the payer; checkout-fix paid 10 GEN to the payee plus the
+payer's 1 GEN bond. The full record, and what the throwaway suite saw, is in
+[`tests/on_chain.md`](tests/on_chain.md).
 
 ## Running it
 
