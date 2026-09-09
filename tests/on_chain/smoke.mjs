@@ -51,7 +51,9 @@ const empty = await send(cp, "open", ["manual-es" + tag, payee.address, "Transla
 ok("an empty escrow is refused", empty.j?.ok === false && String(empty.j?.reason).includes("empty escrow"), empty.j?.reason?.slice(0, 60));
 const self = await send(cp, "open", ["manual-es" + tag, payer.address, "job"], 3n * GEN);
 ok("payer and payee must differ — and the money comes back", self.j?.ok === false && String(self.j?.reason).includes("different accounts"), self.j?.reason?.slice(0, 70));
-ok("the refund is real (gas only)", b0 - (await moved(payer.address, b0)) < 1n * GEN);
+// the sender's balance drops the moment the tx is sent (value + gas) and comes back when the refund lands: wait for the way back
+const settledBack = async (a, before) => { let b = await balance(a); for (let i = 0; i < 20 && before - b >= 1n * GEN; i++) { await new Promise((r) => setTimeout(r, 4000)); b = await balance(a); } return b; };
+ok("the refund is real (gas only)", b0 - (await settledBack(payer.address, b0)) < 1n * GEN);
 
 // ---------- case A: nothing delivered ----------
 const openA = await send(cp, "open", ["manual-es" + tag, payee.address, "Translate the 2,000-word product manual from English to Spanish and deliver it as a .docx by 10 September 2026. Fee: 20 GEN."], 20n * GEN);
